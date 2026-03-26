@@ -14,8 +14,8 @@ cd GREdit
 conda create -n gredit python=3.10 -y
 conda activate gredit
 
-# Install PyTorch (CUDA 11.8)
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# Install PyTorch
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu118
 
 # Install dependencies
 pip install -r requirements.txt
