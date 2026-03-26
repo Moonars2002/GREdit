@@ -58,12 +58,12 @@ python run_clip.py \
 --num_workers: Number of CPU threads for data loading.
 
 ## Acknowledgement
-Our implementation is based on the publicly available code from [DGE](https://github.com/silent-chen/DGE)
+Our implementation is based on the publicly available code from DGE (`https://github.com/silent-chen/DGE`)
 
 We also build upon other wonderful repos:
 
-[3D Gaussian Splatting](https://github.com/graphdeco-inria/gaussian-splatting)
+3D Gaussian Splatting (`https://github.com/graphdeco-inria/gaussian-splatting`)
 
-[Threestudio](https://github.com/threestudio-project/threestudio)
+Threestudio (`https://github.com/threestudio-project/threestudio`)
 
-[GaussianEditor](https://github.com/buaacyw/GaussianEditor)
+GaussianEditor (`https://github.com/buaacyw/GaussianEditor`)
