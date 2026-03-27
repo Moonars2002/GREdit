@@ -67,10 +67,6 @@ class ImagePairDataset(Dataset):
         img0 = Image.open(path0).convert("RGB")
         img1 = Image.open(path1).convert("RGB")
         
-        # 强制对齐分辨率 (如果用原图对比渲染图时需要)
-        # if img0.size != img1.size:
-        #     img0 = img0.resize(img1.size, Image.BICUBIC)
-
         return self.transform(img0), self.transform(img1)
 
 
@@ -97,7 +93,6 @@ def main():
     parser.add_argument("--batch_size", type=int, default=32, help="Batch size.")
     parser.add_argument("--num_workers", type=int, default=4, help="CPU workers.")
     
-    # === 新增参数: 采样间隔 ===
     parser.add_argument("--interval", type=int, default=8, help="Sampling interval. Default is 8 (every 8th image) for EditSplat protocol.")
     
     args = parser.parse_args()
@@ -105,20 +100,17 @@ def main():
     device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device} | Batch Size: {args.batch_size}")
 
-    # 1. 准备文件路径
     paths0 = get_sorted_image_files(args.image_dir0)
     paths1 = get_sorted_image_files(args.image_dir1)
 
     if len(paths0) == 0 or len(paths1) == 0:
         raise ValueError("No images found.")
     if len(paths0) != len(paths1):
-        # 尝试自动截断以匹配长度（可选）
         min_len = min(len(paths0), len(paths1))
         print(f"Warning: Mismatch {len(paths0)} vs {len(paths1)}. Truncating to {min_len}.")
         paths0 = paths0[:min_len]
         paths1 = paths1[:min_len]
 
-    # === 关键修改：固定选图 (Fixed Selection) ===
     if args.interval > 1:
         print(f"Applying fixed selection: Taking every {args.interval}th image.")
         paths0 = paths0[::args.interval]
@@ -127,7 +119,6 @@ def main():
     n_all = len(paths0)
     print(f"Final evaluation set size: {n_all} pairs.")
 
-    # 2. 构建 DataLoader
     dataset = ImagePairDataset(paths0, paths1)
     dataloader = DataLoader(
         dataset, 
@@ -137,12 +128,10 @@ def main():
         pin_memory=True
     )
 
-    # 3. 加载模型
     model = ClipSimilarity(name=args.model)
     model.to(device)
     model.eval()
 
-    # 预计算文本特征 (优化速度)
     with torch.no_grad():
         target_text_feat = model.encode_text([args.text1])
         src_text_feat = model.encode_text([args.text0])
@@ -158,22 +147,16 @@ def main():
             batch_img0 = batch_img0.to(device)
             batch_img1 = batch_img1.to(device)
             
-            # 计算图像特征
             img_feat0 = model.encode_image(batch_img0)
             img_feat1 = model.encode_image(batch_img1)
 
-            # 计算相似度 (利用广播机制)
-            # 1. Target Text Similarity
             sim_1 = F.cosine_similarity(img_feat1, target_text_feat)
             
-            # 2. Directional Similarity
             img_diff = img_feat1 - img_feat0
             text_diff = target_text_feat - src_text_feat
-            # 需要把 text_diff 归一化吗？CLIP Directional Score 通常不归一化差值向量，而是算 Cosine
-            # 这里 F.cosine_similarity 会自动做归一化，所以直接传差值是对的
+
             sim_direction = F.cosine_similarity(img_diff, text_diff)
 
-            # 3. Image Identity
             sim_image = F.cosine_similarity(img_feat0, img_feat1)
 
             all_sims_1.append(sim_1.cpu())
