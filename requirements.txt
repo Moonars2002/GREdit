@@ -1,0 +1,48 @@
+numpy<2.0.0
+scipy==1.17.1
+scikit-learn
+networkx
+diffusers[torch]==0.19.3
+transformers==4.44.2
+accelerate
+kornia==0.7.0
+einops==0.8.2
+albumentations==0.5.2
+webdataset
+opencv-python==4.10.0.84
+matplotlib==3.6.3
+imageio==2.37.2
+imageio[ffmpeg]
+mediapy==1.2.6
+rembg
+nerfacc==0.3.3
+pyrender==0.1.45
+libigl==2.5.1
+xatlas==0.0.11
+trimesh[easy]==4.10.0
+pysdf
+PyMCubes==0.1.6
+plyfile==1.1.3
+omegaconf==2.3.0
+jaxtyping==0.3.9
+typeguard==4.4.4
+tensorboard
+wandb==0.25.1
+torchmetrics
+gradio
+viser==0.2.11
+ninja
+easydict
+torch_efficient_distloss
+
+# GitHub Repositories
+git+https://github.com/NVlabs/tiny-cuda-nn/#subdirectory=bindings/torch
+git+https://github.com/NVlabs/nvdiffrast.git
+git+https://github.com/ashawkey/envlight.git
+git+https://github.com/openai/CLIP.git
+git+https://github.com/ashawkey/kiuikit
+git+https://github.com/luca-medeiros/lang-segment-anything.git@9bdf777
+
+# Local 3DGS Modules
+-e ./submodules/diff-gaussian-rasterization
+-e ./submodules/simple-knn
